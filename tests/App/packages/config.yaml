@@ -1,0 +1,19 @@
+framework:
+  secret: ThisIsSecret
+  test: true
+
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  Eniams\SafeMigrationsBundle\Tests\App\src\:
+    resource: '%kernel.project_dir%/src'
+
+safe_migrations:
+  migrations_path: '%kernel.project_dir%/migrations'
+  critical_tables:
+    - 'my_critical_table'
+  excluded_statements:
+    - 'MODIFY'
