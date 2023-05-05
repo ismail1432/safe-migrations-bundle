@@ -2,6 +2,11 @@
 
 namespace Eniams\SafeMigrationsBundle;
 
+/**
+ * @internal
+ *
+ * @author Smaïne Milianni <smaine.milianni@gmail.com>
+ */
 final class MigrationFileSystem
 {
     private ?string $newestMigrationFileName;

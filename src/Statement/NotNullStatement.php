@@ -2,6 +2,11 @@
 
 namespace Eniams\SafeMigrationsBundle\Statement;
 
+/**
+ * @internal
+ *
+ * @author Smaïne Milianni <smaine.milianni@gmail.com>
+ */
 final class NotNullStatement extends AbstractStatement
 {
     private const STATEMENT = 'NOT NULL';

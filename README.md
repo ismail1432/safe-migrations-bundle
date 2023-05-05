@@ -1,17 +1,20 @@
-# Safe Migrations
+# Safe Migrations Bundle
 
 ----------------
 
-### 🚨 Warn you when your **auto generated** doctrine migrations contains unsafe SQL statements.
+### ⚠️ Warn you when your **auto generated** doctrine migrations contains unsafe SQL statements.
 
 An unsafe migration is:
 - An operation that have to be done carefully if you are doing zero downtime deployments.
 - An operation on a critical table defined by yourself.
 - An operation that can lock table such like `NOT NULL CONSTRAINT` or loss data such like remove or truncate.
+- An operation that can be dangerous such like `DROP` or `RENAME`.
+- An operation defined by yourself.
 
 When an unsafe migration is detected, a warning is displayed in the command `doctrine:migrations:diff` and a comment is added into the migration file.
 
 ### Unsafe statements list
+
 - CREATE INDEX
 - DROP
 - MODIFY
@@ -19,32 +22,32 @@ When an unsafe migration is detected, a warning is displayed in the command `doc
 - RENAME
 - TRUNCATE
 
-[You can exclude a statement](#exclude-a-statement)
+Any of these statement present in your last migration will trigger a warning, feel free to submit a PR to add more statements.
 
-[You can add your own statements](#create-your-own-statement)
+### Features
 
-[You can flag a table as critical to be warned when a migration contains changes on these tables](#configure-critical-tables)
-
-#### ⚠️ The Bundle is not yet ready for production. Wait the 1st release to use it. ⚠️
+- [You can exclude a statement](#exclude-a-statement)
+- [You can add your own statements](#create-your-own-statement)
+- [You can flag a table as critical to be warned when a migration contains changes on these tables](#configure-critical-tables)
 
 ## Getting started
 ### Installation
-You can easily install Safe Migrations bundle by composer
+You can easily install Safe Migrations Bundle by composer
 ```
 $ composer require eniams/safe-migrations-bundle
 ```
 Then, bundle should be registered. Just verify that `config\bundles.php` is containing :
 ```php
-Eniams\SafeMigrationsBundle\SafeMigrationsBundle::class => ['all' => true],
+Eniams\SafeMigrationsBundle\SafeMigrationsBundle::class => ['dev' => true],
 ```
 
 ### Configuration
-Then, you should register it in the configuration (`config/packages/yousign.yaml`) :
+Then, you should register it in the configuration (`config/packages/dev/safe_migrations.yaml`) :
 ```yaml
 # config/packages/safe-migrations.yaml
     safe_migrations:
       # required
-      migrations_path: 'App/migrations'
+      migrations_path: '%kernel.project_dir%/migrations'
       # optional
       critical_tables: # List of critical tables
         - 'user'
@@ -86,20 +89,13 @@ use Eniams\SafeMigrationsBundle\Statement\StatementInterface;<?php
 class MyStatement implements StatementInterface
 {
     protected string $migrationWarning;
-    protected string $commandOutputWarning;
 
     public function migrationWarning(): string
     {
         // The message that will be added in the migration file
         return $this->migrationWarning;
     }
-
-    public function commandOutputWarning(): string
-    {
-        // The message that will be added in the command output
-        return $this->commandOutputWarning;
-    }
-
+    
     public function supports(string $migrationUpContent): bool
     {
         // The logic to determine if the statement is present in the `up` method of migration file.
