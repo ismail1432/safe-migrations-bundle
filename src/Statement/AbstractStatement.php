@@ -2,6 +2,11 @@
 
 namespace Eniams\SafeMigrationsBundle\Statement;
 
+/**
+ * @internal
+ *
+ * @author Smaïne Milianni <smaine.milianni@gmail.com>
+ */
 abstract class AbstractStatement implements StatementInterface
 {
     protected string $migrationWarning;

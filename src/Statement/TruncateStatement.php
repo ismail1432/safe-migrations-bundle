@@ -2,6 +2,11 @@
 
 namespace Eniams\SafeMigrationsBundle\Statement;
 
+/**
+ * @internal
+ *
+ * @author Smaïne Milianni <smaine.milianni@gmail.com>
+ */
 final class TruncateStatement extends AbstractStatement
 {
     private const STATEMENT = 'TRUNCATE TABLE';
