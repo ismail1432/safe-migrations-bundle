@@ -83,8 +83,9 @@ services:
 ``` 
 
 ```php
+<?php
 namespace App\Statement\MyStatement;
-use Eniams\SafeMigrationsBundle\Statement\StatementInterface;<?php
+use Eniams\SafeMigrationsBundle\Statement\StatementInterface;
 
 class MyStatement implements StatementInterface
 {
