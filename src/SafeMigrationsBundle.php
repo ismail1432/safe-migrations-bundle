@@ -5,39 +5,20 @@ namespace Eniams\SafeMigrationsBundle;
 use Eniams\SafeMigrationsBundle\Listener\DoctrineMigrationDiffListener;
 use Eniams\SafeMigrationsBundle\Statement\StatementInterface;
 use Eniams\SafeMigrationsBundle\Warning\WarningFactory;
-use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\tagged_iterator;
 
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 
-class SafeMigrationsBundle extends AbstractBundle
+class SafeMigrationsBundle extends Bundle
 {
-    public function configure(DefinitionConfigurator $definition): void
-    {
-        /* @phpstan-ignore-next-line */
-        $definition
-            ->rootNode()
-                ->children()
-                    ->arrayNode('critical_tables')->canBeUnset()
-                        ->scalarPrototype()->end()
-                    ->end()
-                    ->arrayNode('excluded_statements')->canBeUnset()
-                        ->scalarPrototype()->end()
-                    ->end()
-                    ->scalarNode('migrations_path')->isRequired()->end()
-                ->end()
-            ->end()
-        ;
-    }
-
     /** @phpstan-ignore-next-line */
     public function loadExtension(array $configs, ContainerConfigurator $containerConfigurator, ContainerBuilder $containerBuilder): void
     {
@@ -60,7 +41,7 @@ class SafeMigrationsBundle extends AbstractBundle
         $excludedServiceStatements = $this->getExcludedStatements($containerBuilder, $excludedStatements);
 
         $containerBuilder->setDefinition('eniams.safe_migrations.warning_factory', new Definition(WarningFactory::class))
-            ->setArguments([tagged_iterator('eniams.safe_migrations.statement', exclude: $excludedServiceStatements),
+            ->setArguments([tagged_iterator('eniams.safe_migrations.statement'),
                 $criticalTables]
             )
         ;
