@@ -13,6 +13,11 @@ An unsafe migration is:
 
 When an unsafe migration is detected, a warning is displayed in the command `doctrine:migrations:diff` and a comment is added into the migration file.
 
+![image](https://user-images.githubusercontent.com/13260307/237054338-1b1412e3-6f24-4e05-b929-15c30ab0a736.png)
+
+![image](https://user-images.githubusercontent.com/13260307/237054375-44fe19b1-9915-4841-b366-9ac83d76e360.png)
+
+
 ### Unsafe statements list
 
 - CREATE INDEX
