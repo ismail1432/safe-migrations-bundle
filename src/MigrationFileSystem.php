@@ -2,6 +2,9 @@
 
 namespace Eniams\SafeMigrationsBundle;
 
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
+
 /**
  * @internal
  *
@@ -17,16 +20,17 @@ final class MigrationFileSystem
 
     public function newestMigrationFileName(): ?string
     {
-        $files = scandir($this->doctrineMigrationsDir, \SCANDIR_SORT_DESCENDING);
+        $finder = new Finder();
+        $finder->in($this->doctrineMigrationsDir)->files()->name('*.php')->sortByName()->reverseSorting();
 
-        if (!$files) {
-            throw new \LogicException('Unable to retrieve the newest migration file');
+        if (false === $finder->hasResults()) {
+            return null;
         }
-        $phpFiles = array_filter($files, function ($file) {
-            return str_ends_with($file, '.php');
-        });
 
-        return $this->newestMigrationFileName = $phpFiles[0] ?? null;
+        /** @var SplFileInfo $lastFile */
+        $lastFile = $finder->getIterator()->current();
+
+        return $this->newestMigrationFileName = $lastFile->getFilename();
     }
 
     public function newestFilePath(): string
