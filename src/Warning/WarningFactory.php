@@ -12,14 +12,20 @@ use Eniams\SafeMigrationsBundle\Statement\StatementInterface;
 final class WarningFactory
 {
     private WarningFormatter $warningFormatter;
+    private array $excludedStatementsAsString = [];
 
     /**
-     * @param StatementInterface[] $statements
-     * @param string[]             $criticalTables
+     * @param StatementInterface[]      $statements
+     * @param string[]                  $criticalTables
+     * @param StatementInterface[]|null $excludedStatements
      */
-    public function __construct(private readonly iterable $statements, private readonly array $criticalTables = [])
+    public function __construct(private readonly iterable $statements, private readonly array $criticalTables = [], array $excludedStatements = [])
     {
         $this->warningFormatter = new WarningFormatter();
+
+        foreach ($excludedStatements as $excludedStatement) {
+            $this->excludedStatementsAsString[] = $excludedStatement;
+        }
     }
 
     public function createWarning(string $migration): Warning
@@ -38,7 +44,7 @@ final class WarningFactory
     {
         $commandOutputWarning = $migrationWarning = '';
         foreach ($this->statements as $statement) {
-            if ($statement->supports($migration)) {
+            if ($statement->supports($migration) && false === in_array($statement->getStatement(), $this->excludedStatementsAsString)) {
                 $commandOutputWarning .= $this->warningFormatter->commandOutputWarning($statement->migrationWarning());
                 $migrationWarning .= $this->warningFormatter->migrationWarningLine($statement->migrationWarning());
             }

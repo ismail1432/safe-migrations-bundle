@@ -1,5 +1,6 @@
 <?php
 
+use Eniams\SafeMigrationsBundle\Listener\DoctrineMigrationDiffListener;
 use Eniams\SafeMigrationsBundle\Statement\CreateIndexStatement;
 use Eniams\SafeMigrationsBundle\Statement\DropStatement;
 use Eniams\SafeMigrationsBundle\Statement\ModifyStatement;
@@ -7,6 +8,8 @@ use Eniams\SafeMigrationsBundle\Statement\NotNullStatement;
 use Eniams\SafeMigrationsBundle\Statement\RenameStatement;
 use Eniams\SafeMigrationsBundle\Statement\TruncateStatement;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+
+use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
 return static function (ContainerConfigurator $container): void {
     $container->services()
@@ -30,5 +33,12 @@ return static function (ContainerConfigurator $container): void {
 
         ->set('eniams_safe_migrations.modify.statement', ModifyStatement::class)
         ->tag('eniams.safe_migrations.statement')
+
+        ->set('safe_migrations.doctrine_migration_diff_listener', DoctrineMigrationDiffListener::class)
+        ->tag('kernel.event_subscriber')
+        ->args([
+            service('eniams.safe_migrations.warning_factory'),
+            service('eniams.safe_migrations.file_system'),
+        ])
     ;
 };
