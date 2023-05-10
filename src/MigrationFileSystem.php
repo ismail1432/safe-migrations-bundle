@@ -30,7 +30,7 @@ final class MigrationFileSystem
         /** @var SplFileInfo $lastFile */
         $lastFile = $finder->getIterator()->current();
 
-        return $this->newestMigrationFileName = $lastFile->getFilename();
+        return $this->newestMigrationFileName = $lastFile->getRelativePathname();
     }
 
     public function newestFilePath(): string
