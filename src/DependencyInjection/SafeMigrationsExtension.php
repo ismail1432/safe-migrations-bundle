@@ -16,8 +16,15 @@ use function Symfony\Component\DependencyInjection\Loader\Configurator\tagged_it
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
-final class SafeMigrationsExtension extends ConfigurableExtension
+/**
+ * @internal
+ *
+ * @author Smaïne Milianni <smaine.milianni@gmail.com>
+ * @author Quentin Dequippe <quentin@dequippe.tech>
+ */
+class SafeMigrationsExtension extends ConfigurableExtension
 {
+    /** @phpstan-ignore-next-line */
     public function loadInternal(array $mergedConfig, ContainerBuilder $container): void
     {
         $loader = new PhpFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
@@ -36,13 +43,13 @@ final class SafeMigrationsExtension extends ConfigurableExtension
         ;
 
         $container->registerForAutoconfiguration(StatementInterface::class)->addTag('eniams.safe_migrations.statement');
-        //        $excludedServiceStatements = $this->getExcludedStatements($container, $excludedStatements);
+        $excludedServiceStatements = $this->getExcludedStatements($container, $excludedStatements);
 
         $container->setDefinition('eniams.safe_migrations.warning_factory', new Definition(WarningFactory::class))
             ->setArguments([
                 tagged_iterator('eniams.safe_migrations.statement'),
                 $criticalTables,
-                $excludedStatements,
+                $excludedServiceStatements,
             ])
         ;
     }
@@ -58,7 +65,7 @@ final class SafeMigrationsExtension extends ConfigurableExtension
         foreach ($containerBuilder->findTaggedServiceIds('eniams.safe_migrations.statement') as $id => $tags) {
             $statement = new ($containerBuilder->getDefinition($id)->getClass());
             if (in_array($statement->getStatement(), $excludedStatements, true)) {
-                $excludedServiceStatements[] = $id;
+                $excludedServiceStatements[] = $statement->getStatement();
             }
         }
 

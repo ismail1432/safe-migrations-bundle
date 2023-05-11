@@ -7,6 +7,12 @@ namespace Eniams\SafeMigrationsBundle\DependencyInjection;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
+/**
+ * @internal
+ *
+ * @author Smaïne Milianni <smaine.milianni@gmail.com>
+ * @author Quentin Dequippe <quentin@dequippe.tech>
+ */
 class Configuration implements ConfigurationInterface
 {
     public function getConfigTreeBuilder(): TreeBuilder
