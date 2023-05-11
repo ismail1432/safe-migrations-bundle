@@ -1,6 +1,6 @@
 <?php
 
-namespace Eniams\SafeMigrationsBundle\tests\Unit;
+namespace Eniams\SafeMigrationsBundle\Tests\Unit;
 
 use Eniams\SafeMigrationsBundle\Statement\AbstractStatement;
 use Eniams\SafeMigrationsBundle\Statement\CreateIndexStatement;
