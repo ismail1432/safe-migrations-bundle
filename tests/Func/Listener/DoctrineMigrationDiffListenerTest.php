@@ -45,22 +45,32 @@ class DoctrineMigrationDiffListenerTest extends KernelTestCase
                 'Version20230501WithRenameColumn.php',
                 "// ⚠️ The migration contains a RENAME statement, it's unsafe as it should be compliant with Zero downtime deployment",
             ];
+        yield 'With rename & make:migration command' => [
+            'Version20230501WithRenameColumn.php',
+            "// ⚠️ The migration contains a RENAME statement, it's unsafe as it should be compliant with Zero downtime deployment",
+            'make:migration',
+            'Fake make migration command',
+        ];
     }
 
     /**
      * @dataProvider provideMigrationFiles
      */
-    public function testItAddCommentAndDisplayWarningInCommandOutput(string $filename, string $warning): void
-    {
+    public function testItAddCommentAndDisplayWarningInCommandOutput(
+        string $filename,
+        string $warning,
+        string $commandName = 'doctrine:migrations:diff',
+        string $expectedOutputStart = 'Fake doctrine migrations diff command',
+    ): void {
         $fileBaseDir = __DIR__.'/../../App';
         $this->moveToMigrationDir($filename);
-        $commandTester = $this->getCommandTester();
+        $commandTester = $this->getCommandTester($commandName);
         $commandTester->execute([]);
 
         $this->assertStringContainsString($warning, $c = file_get_contents($fileBaseDir.'/migrations/'.$filename), sprintf('Warning not found in: %s', $c));
 
         $this->assertStringStartsWith(
-            sprintf('Fake doctrine migrations diff command [WARNING] ⚠️ Dangerous operation detected in migration'),
+            sprintf('%s [WARNING] ⚠️ Dangerous operation detected in migration', $expectedOutputStart),
             $this->getReadableOutput($commandTester)
         );
     }
@@ -100,11 +110,11 @@ class DoctrineMigrationDiffListenerTest extends KernelTestCase
         file_put_contents(self::MIGRATION_DIR.'/'.$filename, $source);
     }
 
-    private function getCommandTester(): CommandTester
+    private function getCommandTester(string $commandName = 'doctrine:migrations:diff'): CommandTester
     {
         $app = new Application(self::$kernel);
 
-        return new CommandTester($app->find('doctrine:migrations:diff'));
+        return new CommandTester($app->find($commandName));
     }
 
     public function tearDown(): void
