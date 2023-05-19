@@ -20,7 +20,7 @@ class FakeMakeMigrationCommand extends Command
         parent::__construct();
     }
 
-    // Fake doctrine migrations diff command to simulate the creations
+    // Fake make migration command to simulate the creations
     // of a new migration(s) file(s) when running the command.
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
