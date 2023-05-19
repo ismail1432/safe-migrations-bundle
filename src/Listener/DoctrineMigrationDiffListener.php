@@ -18,6 +18,10 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 final class DoctrineMigrationDiffListener implements EventSubscriberInterface
 {
     private const UP_LINE = 'public function up(Schema $schema)';
+    private const MIGRATION_COMMANDS = [
+        'doctrine:migrations:diff',
+        'make:migration',
+    ];
     private WarningFormatter $warningFormatter;
 
     public function __construct(
@@ -78,7 +82,7 @@ final class DoctrineMigrationDiffListener implements EventSubscriberInterface
 
     private function supports(ConsoleTerminateEvent $event): bool
     {
-        return null !== $event->getCommand() && 'doctrine:migrations:diff' === $event->getCommand()->getName() && 0 === $event->getExitCode();
+        return null !== $event->getCommand() && in_array($event->getCommand()->getName(), self::MIGRATION_COMMANDS) && 0 === $event->getExitCode();
     }
 
     public static function getSubscribedEvents(): array
