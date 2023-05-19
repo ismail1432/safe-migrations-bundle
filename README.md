@@ -39,7 +39,7 @@ Any of these statement present in your last migration will trigger a warning, fe
 ### Installation
 You can easily install Safe Migrations Bundle by composer
 ```
-$ composer require eniams/safe-migrations-bundle
+$ composer require eniams/safe-migrations --dev
 ```
 Then, bundle should be registered. Just verify that `config\bundles.php` is containing :
 ```php
