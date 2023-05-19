@@ -1,6 +1,6 @@
 <?php
 
-namespace Eniams\SafeMigrationsBundle\tests\Func\Command;
+namespace Eniams\SafeMigrationsBundle\Tests\Func\Command;
 
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;

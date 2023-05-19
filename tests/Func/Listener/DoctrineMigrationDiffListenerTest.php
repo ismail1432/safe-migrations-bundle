@@ -1,6 +1,6 @@
 <?php
 
-namespace Eniams\SafeMigrationsBundle\tests\Func\Listener;
+namespace Eniams\SafeMigrationsBundle\Tests\Func\Listener;
 
 use Eniams\SafeMigrationsBundle\Statement\ModifyStatement;
 use Symfony\Bundle\FrameworkBundle\Console\Application;

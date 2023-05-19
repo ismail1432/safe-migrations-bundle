@@ -17,7 +17,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 final class DoctrineMigrationDiffListener implements EventSubscriberInterface
 {
-    private const UP_LINE = 'public function up(Schema $schema): void';
+    private const UP_LINE = 'public function up(Schema $schema)';
     private WarningFormatter $warningFormatter;
 
     public function __construct(

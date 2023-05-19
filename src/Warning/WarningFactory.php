@@ -16,8 +16,9 @@ final class WarningFactory
     /**
      * @param StatementInterface[] $statements
      * @param string[]             $criticalTables
+     * @param array<string>        $excludedStatements
      */
-    public function __construct(private readonly iterable $statements, private readonly array $criticalTables = [])
+    public function __construct(private readonly iterable $statements, private readonly array $criticalTables = [], private readonly array $excludedStatements = [])
     {
         $this->warningFormatter = new WarningFormatter();
     }
@@ -38,7 +39,7 @@ final class WarningFactory
     {
         $commandOutputWarning = $migrationWarning = '';
         foreach ($this->statements as $statement) {
-            if ($statement->supports($migration)) {
+            if ($statement->supports($migration) && false === in_array($statement->getStatement(), $this->excludedStatements)) {
                 $commandOutputWarning .= $this->warningFormatter->commandOutputWarning($statement->migrationWarning());
                 $migrationWarning .= $this->warningFormatter->migrationWarningLine($statement->migrationWarning());
             }
