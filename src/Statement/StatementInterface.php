@@ -3,8 +3,6 @@
 namespace Eniams\SafeMigrationsBundle\Statement;
 
 /**
- * @internal
- *
  * @author Smaïne Milianni <smaine.milianni@gmail.com>
  */
 interface StatementInterface

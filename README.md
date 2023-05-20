@@ -34,6 +34,7 @@ Any of these statement present in your last migration will trigger a warning, fe
 - [You can exclude a statement](#exclude-a-statement)
 - [You can add your own statements](#create-your-own-statement)
 - [You can flag a table as critical to be warned when a migration contains changes on these tables](#configure-critical-tables)
+- [You decorate a statement to personalize the warning message](#decorate-a-statement)
 
 ## Getting started
 ### Installation
@@ -125,6 +126,37 @@ If you want to flag a table as critical and be warned when a migration contains 
         - 'user'
         - 'product'
         - # ...
+```
+
+##### Decorate a statement
+If you want to wrap a statement to personalize the warning message or the logic to catch the statement you can use the [decorator design pattern](https://en.wikipedia.org/wiki/Decorator_pattern#PHP).
+
+See the example bellow, you can also check [how to decorate a service with Symfony](https://symfony.com/doc/current/service_container/service_decoration.html).
+
+```php
+<?php
+namespace App\Statement;
+
+use Eniams\SafeMigrationsBundle\Statement\AbstractStatement;
+
+class CustomNotNullStatement extends AbstractStatement
+{
+    public function getStatement(): string
+    {
+        return 'NOT NULL';
+    }
+
+    public function migrationWarning(): string
+    {
+        return 'Your custom message';
+    }
+}
+```
+
+```yaml
+# config/services.yaml
+    App\Warning\CustomNotNullStatement:
+      decorates: 'eniams_safe_migrations.not_null.statement'
 ```
 
 ## Contributing
