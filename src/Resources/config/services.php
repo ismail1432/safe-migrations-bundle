@@ -39,6 +39,7 @@ return static function (ContainerConfigurator $container): void {
         ->args([
             service('eniams.safe_migrations.warning_factory'),
             service('eniams.safe_migrations.file_system'),
+            service('event_dispatcher'),
         ])
     ;
 };

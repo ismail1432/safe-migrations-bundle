@@ -3,6 +3,7 @@
 namespace Eniams\SafeMigrationsBundle\Tests\Func\Listener;
 
 use Eniams\SafeMigrationsBundle\Statement\ModifyStatement;
+use Eniams\SafeMigrationsBundle\Tests\App\src\EventListener\UnsafeMigrationListener;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -25,6 +26,7 @@ class DoctrineMigrationDiffListenerTest extends KernelTestCase
     {
         parent::setUp();
         self::bootKernel();
+        UnsafeMigrationListener::$inMemoryEvents = [];
     }
 
     public function provideMigrationFiles(): iterable
@@ -65,14 +67,23 @@ class DoctrineMigrationDiffListenerTest extends KernelTestCase
         $fileBaseDir = __DIR__.'/../../App';
         $this->moveToMigrationDir($filename);
         $commandTester = $this->getCommandTester($commandName);
+
+        $migrationFileContent = file_get_contents($fileBaseDir.'/migrations/'.$filename);
         $commandTester->execute([]);
 
-        $this->assertStringContainsString($warning, $c = file_get_contents($fileBaseDir.'/migrations/'.$filename), sprintf('Warning not found in: %s', $c));
+        $this->assertStringContainsString($warning, $migrationFileContentWithWarning = file_get_contents($fileBaseDir.'/migrations/'.$filename), sprintf('Warning not found in: %s', $migrationFileContentWithWarning));
 
         $this->assertStringStartsWith(
             sprintf('%s [WARNING] ⚠️ Dangerous operation detected in migration', $expectedOutputStart),
             $this->getReadableOutput($commandTester)
         );
+
+        $this->assertCount(1, UnsafeMigrationListener::$inMemoryEvents);
+        $unsafeMigration = UnsafeMigrationListener::$inMemoryEvents[0]->getUnsafeMigration();
+
+        $this->assertEquals($unsafeMigration->getMigrationName(), substr($filename, 0, strrpos($filename, '.')));
+        $this->assertStringContainsString($unsafeMigration->getMigrationFileContentWithWarning(), $migrationFileContentWithWarning);
+        $this->assertStringContainsString($unsafeMigration->getMigrationFileContent(), $migrationFileContent);
     }
 
     public function testItIgnoreExcludedOperations(): void

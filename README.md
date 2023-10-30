@@ -159,6 +159,44 @@ class CustomNotNullStatement extends AbstractStatement
       decorates: 'eniams_safe_migrations.not_null.statement'
 ```
 
+##### Event Listener
+When an unsafe migration is created, an event `Eniams\SafeMigrationsBundle\Event\UnsafeMigrationEvent` is dispatched, you can listen it and retrieve a `UnsafeMigration` with the migration name and the content of the migration file.
+
+Example:
+
+```php
+<?php
+
+namespace App\Listener;
+
+use Eniams\SafeMigrationsBundle\Event\UnsafeMigrationEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
+class MigrationRiskySubscriber implements EventSubscriberInterface
+{
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            UnsafeMigrationEvent::class => 'onUnsafeMigration',
+        ];
+    }
+
+    public function onUnsafeMigration(UnsafeMigrationEvent $event)
+    {
+        $unsafeMigration = $event->getUnsafeMigration();
+
+        // Version20231030215756
+        $unsafeMigration->getMigrationName();
+
+        // Migration file
+        $unsafeMigration->getMigrationFileContent();
+
+        // Migration file with the warning.
+        $unsafeMigration->getMigrationFileContentWithWarning();
+    }
+}
+```
+
 ## Contributing
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
@@ -173,4 +211,5 @@ $ make all
 ```
 
 ## Authors
-- Smaine Milianni - [ismail1432](https://github.com/ismail1432) - <smaine(dot)milianni@gmail(dot)com>
+- Smaïne Milianni - [ismail1432](https://github.com/ismail1432) - <smaine(dot)milianni@gmail(dot)com>
+- Quentin Dequippe - [qdequippe](https://github.com/qdequippe) - <quentin@dequippe(dot)tech>

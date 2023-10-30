@@ -2,12 +2,15 @@
 
 namespace Eniams\SafeMigrationsBundle\Listener;
 
+use Eniams\SafeMigrationsBundle\Event\UnsafeMigration;
+use Eniams\SafeMigrationsBundle\Event\UnsafeMigrationEvent;
 use Eniams\SafeMigrationsBundle\MigrationFileSystem;
 use Eniams\SafeMigrationsBundle\Warning\WarningFactory;
 use Eniams\SafeMigrationsBundle\Warning\WarningFormatter;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -26,7 +29,8 @@ final class DoctrineMigrationDiffListener implements EventSubscriberInterface
 
     public function __construct(
         private readonly WarningFactory $warningFactory,
-        private readonly MigrationFileSystem $fileSystem
+        private readonly MigrationFileSystem $fileSystem,
+        private readonly EventDispatcherInterface $dispatcher
     ) {
         $this->warningFormatter = new WarningFormatter();
     }
@@ -65,17 +69,22 @@ final class DoctrineMigrationDiffListener implements EventSubscriberInterface
             return;
         }
 
+        $migrationFileContentWithWarning = '';
         while (false !== $buffer = fgets($f)) {
             if (str_contains($buffer, self::UP_LINE)) {
                 $position = ftell($f);
-                $zddMigrationWarningComment = substr_replace($migrationFileContent, $migrationWarning, $position + 6, 0);
-                file_put_contents($newestMigrationFile, $zddMigrationWarningComment);
+                $migrationFileContentWithWarning = substr_replace($migrationFileContent, $migrationWarning, $position + 6, 0);
+                file_put_contents($newestMigrationFile, $migrationFileContentWithWarning);
                 break;
             }
         }
         fclose($f);
-
         $migrationName = $this->fileSystem->migrationName();
+
+        if ('' !== $migrationFileContentWithWarning) {
+            $this->dispatcher->dispatch(new UnsafeMigrationEvent(new UnsafeMigration($migrationName, $migrationFileContent, $migrationFileContentWithWarning)), UnsafeMigrationEvent::class);
+        }
+
         $io->warning($this->warningFormatter->dangerousOperationMessage($migrationName));
         $io->warning($warning->commandOutputWarning());
     }
