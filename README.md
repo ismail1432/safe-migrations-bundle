@@ -197,6 +197,11 @@ class MigrationRiskySubscriber implements EventSubscriberInterface
 }
 ```
 
+##### Debug the configuration
+
+You can debug the configuration you set with the following command:
+`$ bin/console eniams:debug-configuration`
+
 ## Contributing
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
