@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Eniams\SafeMigrationsBundle\DependencyInjection;
 
+use Eniams\SafeMigrationsBundle\Command\DebugConfigurationCommand;
 use Eniams\SafeMigrationsBundle\MigrationFileSystem;
 use Eniams\SafeMigrationsBundle\Statement\StatementInterface;
 use Eniams\SafeMigrationsBundle\Warning\WarningFactory;
@@ -51,6 +52,15 @@ class SafeMigrationsExtension extends ConfigurableExtension
                 $criticalTables,
                 $excludedServiceStatements,
             ])
+        ;
+
+        $container->setDefinition('eniams.safe_migrations.debug_command', new Definition(DebugConfigurationCommand::class))
+            ->setArguments([
+                tagged_iterator('eniams.safe_migrations.statement'),
+                $criticalTables,
+                $excludedServiceStatements,
+            ])
+            ->addTag('console.command')
         ;
     }
 
